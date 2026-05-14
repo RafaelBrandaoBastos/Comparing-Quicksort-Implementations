@@ -227,13 +227,3 @@ Ao reiniciar o aplicativo, o histórico é carregado automaticamente na aba **Hi
 5. Repita com outros padrões (Sorted, ReverseSorted, etc.)
    para comparar o comportamento em diferentes entradas
 ```
-
----
-
-## Teste de aceite
-
-Execute com **Tamanho=1000, Repetições=5, Padrão=Random** e clique em **Comparar os 3 Algoritmos**:
-
-- Devem aparecer 3 linhas na aba "Resultados Atuais".
-- Devem ser persistidas 3 linhas nos arquivos de histórico.
-- Ao reiniciar o aplicativo, a aba "Histórico" deve exibir essas mesmas 3 linhas.
