@@ -9,3 +9,4 @@ C:\Users\Samir\Desktop\Faculdade\Proj & Als\Comparing-Quicksort-Implementations\
 C:\Users\Samir\Desktop\Faculdade\Proj & Als\Comparing-Quicksort-Implementations\code\Sorting.Core\obj\Debug\net8.0\refint\Sorting.Core.dll
 C:\Users\Samir\Desktop\Faculdade\Proj & Als\Comparing-Quicksort-Implementations\code\Sorting.Core\obj\Debug\net8.0\Sorting.Core.pdb
 C:\Users\Samir\Desktop\Faculdade\Proj & Als\Comparing-Quicksort-Implementations\code\Sorting.Core\obj\Debug\net8.0\ref\Sorting.Core.dll
+C:\Users\Samir\Desktop\Faculdade\Proj & Als\Comparing-Quicksort-Implementations\code\Sorting.Core\obj\Debug\net8.0\Sorting.Core.sourcelink.json

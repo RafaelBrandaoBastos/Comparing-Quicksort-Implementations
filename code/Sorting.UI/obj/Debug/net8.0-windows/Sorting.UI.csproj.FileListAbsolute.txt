@@ -16,3 +16,4 @@ C:\Users\Samir\Desktop\Faculdade\Proj & Als\Comparing-Quicksort-Implementations\
 C:\Users\Samir\Desktop\Faculdade\Proj & Als\Comparing-Quicksort-Implementations\code\Sorting.UI\obj\Debug\net8.0-windows\Sorting.UI.pdb
 C:\Users\Samir\Desktop\Faculdade\Proj & Als\Comparing-Quicksort-Implementations\code\Sorting.UI\obj\Debug\net8.0-windows\Sorting.UI.genruntimeconfig.cache
 C:\Users\Samir\Desktop\Faculdade\Proj & Als\Comparing-Quicksort-Implementations\code\Sorting.UI\obj\Debug\net8.0-windows\ref\Sorting.UI.dll
+C:\Users\Samir\Desktop\Faculdade\Proj & Als\Comparing-Quicksort-Implementations\code\Sorting.UI\obj\Debug\net8.0-windows\Sorting.UI.sourcelink.json
