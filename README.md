@@ -10,18 +10,17 @@ Estudo comparativo empírico de três versões de Quicksort, medindo tempo de ex
 
 ## Como rodar
 
-1. Abrir o projeto na sua IDE
+1. Abrir o projeto na sua IDE (neste exemplo é utilizado o VS Code)
 
 2. Entrar na pasta /code
 
 3. Rodar o comando `dotnet run --project Sorting.UI`
-> [!WARNING]
-> Se estiver no Visual Studio 2022+ abra `Comparing-Quicksort.sln` no e pressione **F5**.
 
-4. Será aberta uma janela contendo as opções de execução
+4. Ou se estiver no Visual Studio 2022+ abra `Comparing-Quicksort.sln` no e pressione **F5**.
+
+5. Será aberta uma janela contendo as opções de execução
 
 <img width="2535" height="1307" alt="{66E28F2D-EED6-49FD-A15C-054E3783FE55}" src="https://github.com/user-attachments/assets/c7b2ff17-d34e-4f1c-aa38-f6f8f9718867" />
-
 
 
 # Estrutura da solução
