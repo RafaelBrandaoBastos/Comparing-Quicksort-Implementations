@@ -1,12 +1,29 @@
 # Comparador de Quicksort — Trabalho Prático PAA
 
-## Objetivo
+Estudo comparativo empírico de três versões de Quicksort, medindo tempo de execução (relógio da máquina), número de comparações e número de trocas sobre cinco padrões distintos de entrada. Feito em C#.
 
-Estudo comparativo empírico de três versões de Quicksort, medindo tempo de execução (relógio da máquina), número de comparações e número de trocas sobre cinco padrões distintos de entrada.
 
----
+## Pré-requisitos
 
-## Estrutura da solução
+- Ter o .NET 8 SDK instalado [Download Aqui!](https://dotnet.microsoft.com/pt-br/download/dotnet/thank-you/runtime-desktop-8.0.27-windows-x64-installer?cid=getdotnetcore).
+
+
+## Como rodar
+
+1. Abrir o projeto na sua IDE
+
+2. Entrar na pasta /code
+
+3. Rodar o comando `dotnet run --project Sorting.UI`
+> [!WARNING]
+> Se estiver no Visual Studio 2022+ abra `Comparing-Quicksort.sln` no e pressione **F5**.
+
+4. Será aberta uma janela contendo as opções de execução
+
+<img width="2477" height="1297" alt="{639E4722-EAF2-4DA3-BF0C-CE30872338ED}" src="https://github.com/user-attachments/assets/60278cb8-de0b-46fa-b855-f679d3166a27" />
+
+
+# Estrutura da solução
 
 ```
 code/
@@ -37,22 +54,6 @@ code/
     ├── MainForm.Designer.cs
     └── Program.cs
 ```
-
----
-
-## Pré-requisitos e como executar
-
-**Requisito:** .NET 8 SDK instalado ([https://dotnet.microsoft.com/download](https://dotnet.microsoft.com/download)).
-
-```powershell
-# Na pasta code/
-Set-Location ".\code"
-dotnet run --project Sorting.UI
-```
-
-Ou abra `Comparing-Quicksort.sln` no Visual Studio 2022+ e pressione **F5**.
-
----
 
 ## Descrição dos algoritmos
 
