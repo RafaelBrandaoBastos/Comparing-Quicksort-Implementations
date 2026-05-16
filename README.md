@@ -20,7 +20,8 @@ Estudo comparativo empírico de três versões de Quicksort, medindo tempo de ex
 
 4. Será aberta uma janela contendo as opções de execução
 
-<img width="2477" height="1297" alt="{639E4722-EAF2-4DA3-BF0C-CE30872338ED}" src="https://github.com/user-attachments/assets/60278cb8-de0b-46fa-b855-f679d3166a27" />
+<img width="2535" height="1307" alt="{66E28F2D-EED6-49FD-A15C-054E3783FE55}" src="https://github.com/user-attachments/assets/c7b2ff17-d34e-4f1c-aa38-f6f8f9718867" />
+
 
 
 # Estrutura da solução
