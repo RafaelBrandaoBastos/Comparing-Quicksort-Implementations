@@ -18,7 +18,7 @@ public class MParameterSearchService
         int seed,
         int size = 1000,
         int repetitions = 20,
-        int mStart = 2,
+        int mStart = 0,
         int mEnd = 64,
         int mStep = 2,
         bool useMedianOfThree = false)

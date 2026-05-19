@@ -3,14 +3,26 @@ using Sorting.Core.Data;
 using Sorting.Core.Models;
 using Sorting.Core.Services;
 using Sorting.Core.Utils;
+using System.Windows.Forms.DataVisualization.Charting;
 
 namespace Sorting.UI;
 
 public partial class MainForm : Form
 {
+    private const string ChartAreaName = "MainArea";
+    private const string ChartLegendName = "MainLegend";
+    private static readonly Font ChartTitleFont = new("Segoe UI", 11F, FontStyle.Bold);
+    private static readonly Font ChartAxisTitleFont = new("Segoe UI", 10F, FontStyle.Bold);
+    private static readonly Font ChartAxisLabelFont = new("Segoe UI", 10F, FontStyle.Regular);
+    private static readonly Font ChartLegendFont = new("Segoe UI", 10F, FontStyle.Regular);
+
     private int[]? _currentArray;
     private DataPattern _currentPattern;
     private int _currentSeed;
+    private readonly Dictionary<DataPattern, List<ExperimentResult>> _latestMassChartResultsByPattern = [];
+    private readonly Dictionary<DataPattern, (int Size, int Seed)> _latestMassMetaByPattern = [];
+    private readonly Dictionary<DataPattern, SafeChart> _patternCharts = [];
+    private readonly Dictionary<DataPattern, Label> _patternChartPlaceholders = [];
 
     private readonly ExperimentRunner _runner = new();
     private readonly ResultsRepository _repository = new();
@@ -50,6 +62,7 @@ public partial class MainForm : Form
     public MainForm()
     {
         InitializeComponent();
+        InitializePatternCharts();
         PopulatePatternCombo();
         LoadDefaults();
         UpdateButtonStates();
@@ -73,6 +86,93 @@ public partial class MainForm : Form
         chkRecursive.Checked = true;
         chkHybrid.Checked = true;
         chkHybridMedian.Checked = true;
+    }
+
+    private void InitializePatternCharts()
+    {
+        tabPatternCharts.SuspendLayout();
+        tabPatternCharts.TabPages.Clear();
+        _patternCharts.Clear();
+        _patternChartPlaceholders.Clear();
+
+        foreach (var pattern in Enum.GetValues<DataPattern>())
+        {
+            var tabPage = new TabPage(pattern.ToString())
+            {
+                Padding = new Padding(3)
+            };
+
+            var placeholder = CreateChartPlaceholder(pattern);
+            var chart = CreatePatternChart();
+            chart.Visible = false;
+
+            tabPage.Controls.Add(placeholder);
+            tabPage.Controls.Add(chart);
+            tabPatternCharts.TabPages.Add(tabPage);
+            _patternCharts[pattern] = chart;
+            _patternChartPlaceholders[pattern] = placeholder;
+        }
+
+        tabPatternCharts.ResumeLayout();
+    }
+
+    private static Label CreateChartPlaceholder(DataPattern pattern)
+    {
+        return new Label
+        {
+            Dock = DockStyle.Fill,
+            TextAlign = ContentAlignment.MiddleCenter,
+            ForeColor = Color.DimGray,
+            BackColor = Color.WhiteSmoke,
+            Font = new Font("Segoe UI", 10F, FontStyle.Italic),
+            Text =
+                $"Ainda não há dados para o padrão {pattern}.\n\n" +
+                "Execute testes com variação de M e salve os resultados para gerar este gráfico."
+        };
+    }
+
+    private static SafeChart CreatePatternChart()
+    {
+        var chart = new SafeChart
+        {
+            Dock = DockStyle.Fill,
+            BorderlineDashStyle = ChartDashStyle.Solid,
+            BorderlineColor = Color.Gainsboro,
+            BackColor = Color.White,
+            Palette = ChartColorPalette.Bright
+        };
+
+        var area = new ChartArea(ChartAreaName);
+        area.AxisX.Title = "Valores de M";
+        area.AxisY.Title = "Tempo médio (ms)";
+        area.AxisX.TitleFont = ChartAxisTitleFont;
+        area.AxisY.TitleFont = ChartAxisTitleFont;
+        area.AxisX.LabelStyle.Font = ChartAxisLabelFont;
+        area.AxisY.LabelStyle.Font = ChartAxisLabelFont;
+        area.AxisX.IsMarginVisible = false;
+        area.AxisX.LabelStyle.Format = "0.####";
+        area.AxisY.LabelStyle.Format = "0.####";
+        area.AxisX.IntervalAutoMode = IntervalAutoMode.VariableCount;
+        area.AxisX.MajorGrid.LineColor = Color.Gainsboro;
+        area.AxisY.MajorGrid.LineColor = Color.Gainsboro;
+        chart.ChartAreas.Add(area);
+
+        var legend = new Legend(ChartLegendName)
+        {
+            Docking = Docking.Top,
+            Alignment = StringAlignment.Near,
+            Font = ChartLegendFont
+        };
+        chart.Legends.Add(legend);
+        chart.FormatNumber += Chart_FormatNumber;
+
+        return chart;
+    }
+
+    private static void Chart_FormatNumber(object? sender, FormatNumberEventArgs e)
+    {
+        if (Math.Abs(e.Value) < 0.0000001)
+            e.LocalizedValue = "0";
     }
 
     private void LoadHistory()
@@ -201,6 +301,183 @@ public partial class MainForm : Form
                 $"T.Médio={r.AvgTimeMs:F4}ms | Comp.={r.AvgComparisons:F0} | " +
                 $"Trocas={r.AvgSwaps:F0} | DP={r.StdDevTimeMs:F4}ms");
         }
+
+        UpdateCurrentMassChart(results);
+    }
+
+    private void UpdateCurrentMassChart(IEnumerable<ExperimentResult> latestRunResults)
+    {
+        var list = latestRunResults.ToList();
+        if (list.Count == 0)
+            return;
+
+        var pattern = _currentPattern;
+        if (!_latestMassChartResultsByPattern.TryGetValue(pattern, out var storedResults))
+        {
+            storedResults = [];
+            _latestMassChartResultsByPattern[pattern] = storedResults;
+        }
+
+        foreach (var result in list)
+        {
+            int existingIndex = storedResults.FindIndex(r =>
+                string.Equals(r.AlgorithmName, result.AlgorithmName, StringComparison.OrdinalIgnoreCase)
+                && r.M == result.M);
+
+            if (existingIndex >= 0)
+                storedResults[existingIndex] = result;
+            else
+                storedResults.Add(result);
+        }
+
+        UpdateMvsTimeChart();
+    }
+
+    private void UpdateMvsTimeChart()
+    {
+        if (tabPatternCharts.InvokeRequired)
+        {
+            tabPatternCharts.Invoke(UpdateMvsTimeChart);
+            return;
+        }
+
+        foreach (var (pattern, chart) in _patternCharts)
+        {
+            string patternName = pattern.ToString();
+            var placeholder = _patternChartPlaceholders[pattern];
+
+            chart.Series.Clear();
+            chart.Titles.Clear();
+
+            if (!_latestMassChartResultsByPattern.TryGetValue(pattern, out var patternRows))
+                patternRows = [];
+
+            var grouped = patternRows
+                .Where(r => r.M.HasValue)
+                .GroupBy(r => r.AlgorithmName)
+                .OrderBy(g => g.Key, StringComparer.OrdinalIgnoreCase)
+                .Select(g => new
+                {
+                    Algorithm = g.Key,
+                    Points = g
+                        .GroupBy(r => r.M!.Value)
+                        .Select(mg => new
+                        {
+                            M = mg.Key,
+                            AvgTimeMs = mg.Average(x => x.AvgTimeMs)
+                        })
+                        .OrderBy(p => p.M)
+                        .ToList()
+                })
+                .Where(x => x.Points.Count > 0)
+                .ToList();
+
+            var xValues = grouped
+                .SelectMany(g => g.Points)
+                .Select(p => (double)p.M)
+                .ToList();
+            var yValues = grouped
+                .SelectMany(g => g.Points)
+                .Select(p => p.AvgTimeMs)
+                .ToList();
+
+            string titleText = _latestMassMetaByPattern.TryGetValue(pattern, out var massMeta)
+                ? $"Tempo de execução por M e algoritmo | {patternName} | N={massMeta.Size:N0} | Seed={massMeta.Seed}"
+                : $"Tempo de execução por M e algoritmo | {patternName}";
+
+            chart.Titles.Add(new Title
+            {
+                Text = titleText,
+                Font = ChartTitleFont
+            });
+
+            foreach (var alg in grouped)
+            {
+                var series = new Series(alg.Algorithm)
+                {
+                    ChartType = SeriesChartType.Line,
+                    BorderWidth = 2,
+                    MarkerStyle = MarkerStyle.Circle,
+                    MarkerSize = 6,
+                    IsXValueIndexed = false,
+                    XValueType = ChartValueType.Int32,
+                    YValueType = ChartValueType.Double,
+                    Legend = ChartLegendName,
+                    ChartArea = ChartAreaName
+                };
+
+                foreach (var p in alg.Points)
+                    series.Points.AddXY(p.M, p.AvgTimeMs);
+
+                chart.Series.Add(series);
+            }
+
+            // Recursivo nao usa M; plota como referencia em M=0.
+            var recursiveRows = patternRows
+                .Where(r => string.Equals(r.AlgorithmName, _recursive.Name, StringComparison.OrdinalIgnoreCase))
+                .ToList();
+
+            if (recursiveRows.Count > 0)
+            {
+                var recursiveSeries = new Series($"Tempo Base: {_recursive.Name}")
+                {
+                    ChartType = SeriesChartType.Point,
+                    MarkerStyle = MarkerStyle.Circle,
+                    MarkerSize = 10,
+                    Color = Color.Red,
+                    IsXValueIndexed = false,
+                    XValueType = ChartValueType.Double,
+                    YValueType = ChartValueType.Double,
+                    Legend = ChartLegendName,
+                    ChartArea = ChartAreaName
+                };
+
+                double recursiveAvg = recursiveRows.Average(r => r.AvgTimeMs);
+                xValues.Add(0d);
+                yValues.Add(recursiveAvg);
+                // Workaround para bug do Chart: série Point com 1 único ponto pode ser plotada em X=1.
+                recursiveSeries.Points.AddXY(0d, recursiveAvg);
+                var hiddenPointIndex = recursiveSeries.Points.AddXY(0.000001d, recursiveAvg);
+                var hiddenPoint = recursiveSeries.Points[hiddenPointIndex];
+                hiddenPoint.MarkerStyle = MarkerStyle.None;
+                hiddenPoint.Color = Color.Transparent;
+                chart.Series.Add(recursiveSeries);
+            }
+
+            ApplyAdaptiveChartScale(chart, xValues, yValues);
+
+            bool hasData = chart.Series.Count > 0;
+            chart.Legends[ChartLegendName].Enabled = hasData;
+            chart.Visible = hasData;
+            placeholder.Visible = !hasData;
+        }
+    }
+
+    private static void ApplyAdaptiveChartScale(SafeChart chart, IReadOnlyList<double> xValues, IReadOnlyList<double> yValues)
+    {
+        var area = chart.ChartAreas[ChartAreaName];
+
+        if (xValues.Count == 0 || yValues.Count == 0)
+        {
+            area.AxisX.Minimum = 0;
+            area.AxisX.Maximum = 1;
+            area.AxisY.Minimum = 0;
+            area.AxisY.Maximum = 1;
+            return;
+        }
+
+        double maxX = Math.Max(0, xValues.Max());
+        double xPadding = maxX <= 1 ? 1 : Math.Max(1, maxX * 0.05);
+        area.AxisX.Minimum = 0;
+        area.AxisX.Maximum = maxX + xPadding;
+
+        double minY = Math.Max(0, yValues.Min());
+        double maxY = Math.Max(0, yValues.Max());
+        double ySpan = maxY - minY;
+        double yPadding = ySpan > 0 ? ySpan * 0.15 : Math.Max(0.01, maxY * 0.15);
+
+        area.AxisY.Minimum = Math.Max(0, minY - yPadding);
+        area.AxisY.Maximum = maxY + yPadding;
     }
 
     /// <summary>
@@ -243,6 +520,9 @@ public partial class MainForm : Form
             _currentArray = _generator.Generate(size, pattern, seed);
             _currentPattern = pattern;
             _currentSeed = seed;
+            _latestMassMetaByPattern[pattern] = (size, seed);
+            _latestMassChartResultsByPattern[pattern] = [];
+            UpdateMvsTimeChart();
 
             UpdateButtonStates();
             UpdateMassPreview();
@@ -268,14 +548,14 @@ public partial class MainForm : Form
 
         var array = _currentArray!;
         int repetitions = (int)numRepetitions.Value;
-        int seed = (int)numSeed.Value;
+        int seed = _currentSeed;
         int mVal = (int)numM.Value;
-        var pattern = GetSelectedPattern();
+        var pattern = _currentPattern;
 
         try
         {
             Guard.GreaterThanZero(repetitions, "Repetições");
-            Guard.GreaterThan(mVal, 1, "M");
+            Guard.GreaterThan(mVal, -1, "M");
         }
         catch (ArgumentException ex)
         {
@@ -317,14 +597,14 @@ public partial class MainForm : Form
     {
         var array = _currentArray!;
         int repetitions = (int)numRepetitions.Value;
-        int seed = (int)numSeed.Value;
+        int seed = _currentSeed;
         int mVal = (int)numM.Value;
-        var pattern = GetSelectedPattern();
+        var pattern = _currentPattern;
 
         try
         {
             Guard.GreaterThanZero(repetitions, "Repetições");
-            Guard.GreaterThan(mVal, 1, "M");
+            Guard.GreaterThan(mVal, -1, "M");
         }
         catch (ArgumentException ex)
         {
@@ -424,6 +704,9 @@ public partial class MainForm : Form
         {
             _repository.ClearAll();
             dgvHistory.DataSource = null;
+            _latestMassChartResultsByPattern.Clear();
+            _latestMassMetaByPattern.Clear();
+            UpdateMvsTimeChart();
             Log("Histórico apagado com sucesso.");
         }
         catch (Exception ex)

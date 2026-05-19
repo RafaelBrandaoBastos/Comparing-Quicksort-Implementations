@@ -11,6 +11,7 @@ partial class MainForm
     private System.Windows.Forms.TabPage tabActiveMass;
     private System.Windows.Forms.TabPage tabCurrentResults;
     private System.Windows.Forms.TabPage tabHistory;
+    private System.Windows.Forms.TabPage tabChart;
     private System.Windows.Forms.TabPage tabLog;
 
     // Aba Massa Ativa
@@ -48,6 +49,7 @@ partial class MainForm
     // Grids e log
     private System.Windows.Forms.DataGridView dgvCurrentResults;
     private System.Windows.Forms.DataGridView dgvHistory;
+    private System.Windows.Forms.TabControl tabPatternCharts;
     private System.Windows.Forms.TextBox txtLog;
 
     // Tooltips
@@ -78,9 +80,11 @@ partial class MainForm
 
         this.tabCurrentResults = new System.Windows.Forms.TabPage();
         this.tabHistory = new System.Windows.Forms.TabPage();
+        this.tabChart = new System.Windows.Forms.TabPage();
         this.tabLog = new System.Windows.Forms.TabPage();
         this.dgvCurrentResults = new System.Windows.Forms.DataGridView();
         this.dgvHistory = new System.Windows.Forms.DataGridView();
+        this.tabPatternCharts = new System.Windows.Forms.TabControl();
         this.txtLog = new System.Windows.Forms.TextBox();
 
         this.lblSize = new System.Windows.Forms.Label();
@@ -110,6 +114,7 @@ partial class MainForm
         this.pnlMassControl.SuspendLayout();
         this.tabCurrentResults.SuspendLayout();
         this.tabHistory.SuspendLayout();
+        this.tabChart.SuspendLayout();
         this.tabLog.SuspendLayout();
         this.grpAlgorithms.SuspendLayout();
         ((System.ComponentModel.ISupportInitialize)(this.numMassViewCount)).BeginInit();
@@ -196,12 +201,12 @@ partial class MainForm
         // lblM
         this.lblM.AutoSize = true;
         this.lblM.Location = new System.Drawing.Point(8, 172);
-        this.lblM.Text = "M – limiar híbrido (> 1):";
+        this.lblM.Text = "M – limiar híbrido (>= 0):";
 
         // numM
         this.numM.Location = new System.Drawing.Point(8, 190);
         this.numM.Size = new System.Drawing.Size(268, 26);
-        this.numM.Minimum = 2M;
+        this.numM.Minimum = 0M;
         this.numM.Maximum = 512M;
         this.numM.Value = 16M;
         this.toolTipMain.SetToolTip(this.numM,
@@ -321,6 +326,7 @@ partial class MainForm
         this.tabMain.Controls.Add(this.tabActiveMass);
         this.tabMain.Controls.Add(this.tabCurrentResults);
         this.tabMain.Controls.Add(this.tabHistory);
+        this.tabMain.Controls.Add(this.tabChart);
         this.tabMain.Controls.Add(this.tabLog);
         this.tabMain.Font = new System.Drawing.Font("Segoe UI", 9.5F);
 
@@ -408,6 +414,16 @@ partial class MainForm
         this.dgvHistory.BackgroundColor = System.Drawing.SystemColors.Window;
         this.dgvHistory.BorderStyle = System.Windows.Forms.BorderStyle.None;
 
+        // ── tabChart ───────────────────────────────────────────────────────
+
+        this.tabChart.Text = "Gráfico Valores de M x Tempo";
+        this.tabChart.Padding = new System.Windows.Forms.Padding(3);
+        this.tabChart.Controls.Add(this.tabPatternCharts);
+
+        // tabPatternCharts
+        this.tabPatternCharts.Dock = System.Windows.Forms.DockStyle.Fill;
+        this.tabPatternCharts.Font = new System.Drawing.Font("Segoe UI", 9F);
+
         // ── tabLog ─────────────────────────────────────────────────────────
 
         this.tabLog.Text = "Log";
@@ -450,6 +466,7 @@ partial class MainForm
         this.pnlMassControl.ResumeLayout(false);
         this.pnlMassControl.PerformLayout();
         this.tabActiveMass.ResumeLayout(false);
+        this.tabChart.ResumeLayout(false);
         this.tabLog.ResumeLayout(false);
         this.tabLog.PerformLayout();
         this.tabHistory.ResumeLayout(false);
