@@ -83,8 +83,8 @@ public class ResultsRepository
             r.Repetitions,
             r.Seed,
             r.M?.ToString() ?? string.Empty,
-            r.AvgTimeMs.ToString("F4", System.Globalization.CultureInfo.InvariantCulture),
-            r.AvgComparisons.ToString("F2", System.Globalization.CultureInfo.InvariantCulture),
-            r.AvgSwaps.ToString("F2", System.Globalization.CultureInfo.InvariantCulture),
-            r.StdDevTimeMs.ToString("F4", System.Globalization.CultureInfo.InvariantCulture));
+            r.AvgTimeMs.ToString("0.####", System.Globalization.CultureInfo.InvariantCulture),
+            r.AvgComparisons.ToString("0.####", System.Globalization.CultureInfo.InvariantCulture),
+            r.AvgSwaps.ToString("0.####", System.Globalization.CultureInfo.InvariantCulture),
+            r.StdDevTimeMs.ToString("0.####", System.Globalization.CultureInfo.InvariantCulture));
 }

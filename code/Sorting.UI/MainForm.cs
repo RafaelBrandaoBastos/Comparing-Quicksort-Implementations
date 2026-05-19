@@ -82,6 +82,7 @@ public partial class MainForm : Form
             var results = _repository.LoadAllResults().ToList();
             dgvHistory.DataSource = new BindingSource { DataSource = results };
             ApplyColumnTooltips(dgvHistory);
+            ApplyResultColumnFormats(dgvHistory);
             Log($"Histórico carregado: {results.Count} registro(s).");
         }
         catch (Exception ex)
@@ -165,6 +166,22 @@ public partial class MainForm : Form
         }
     }
 
+    private static void ApplyResultColumnFormats(DataGridView dgv)
+    {
+        const string maxFourDecimals = "0.####";
+
+        foreach (DataGridViewColumn col in dgv.Columns)
+        {
+            if (col.DataPropertyName is nameof(ExperimentResult.AvgTimeMs)
+                or nameof(ExperimentResult.AvgComparisons)
+                or nameof(ExperimentResult.AvgSwaps)
+                or nameof(ExperimentResult.StdDevTimeMs))
+            {
+                col.DefaultCellStyle.Format = maxFourDecimals;
+            }
+        }
+    }
+
     private void ShowResults(List<ExperimentResult> results)
     {
         if (dgvCurrentResults.InvokeRequired)
@@ -174,6 +191,7 @@ public partial class MainForm : Form
         }
         dgvCurrentResults.DataSource = new BindingSource { DataSource = results };
         ApplyColumnTooltips(dgvCurrentResults);
+        ApplyResultColumnFormats(dgvCurrentResults);
         tabMain.SelectedTab = tabCurrentResults;
 
         foreach (var r in results)
@@ -372,7 +390,7 @@ public partial class MainForm : Form
             Log($"[Híbrido Simples] Melhor M = {simpleResult.BestM}");
             Log("  Ranking top-5 (por T. Médio):");
             foreach (var r in simpleResult.Ranking.Take(5))
-                Log($"    M={r.M,3} → {r.AvgTimeMs:F4} ms | Comp.={r.AvgComparisons:F0}");
+                Log($"    M={r.M,3} → {r.AvgTimeMs:0.####} ms | Comp.={r.AvgComparisons:0.####}");
 
             var medianResult = await Task.Run(() =>
                 svc.FindBestM(pattern, seed, size, repetitions, useMedianOfThree: true));
@@ -380,7 +398,7 @@ public partial class MainForm : Form
             Log($"[Híbrido Mediana-3] Melhor M = {medianResult.BestM}");
             Log("  Ranking top-5 (por T. Médio):");
             foreach (var r in medianResult.Ranking.Take(5))
-                Log($"    M={r.M,3} → {r.AvgTimeMs:F4} ms | Comp.={r.AvgComparisons:F0}");
+                Log($"    M={r.M,3} → {r.AvgTimeMs:0.####} ms | Comp.={r.AvgComparisons:0.####}");
         }
         catch (Exception ex)
         {
