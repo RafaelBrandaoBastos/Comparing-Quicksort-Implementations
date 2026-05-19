@@ -10,3 +10,15 @@ C:\Users\Samir\Desktop\Faculdade\Proj & Als\Comparing-Quicksort-Implementations\
 C:\Users\Samir\Desktop\Faculdade\Proj & Als\Comparing-Quicksort-Implementations\code\Sorting.Core\obj\Debug\net8.0\Sorting.Core.pdb
 C:\Users\Samir\Desktop\Faculdade\Proj & Als\Comparing-Quicksort-Implementations\code\Sorting.Core\obj\Debug\net8.0\ref\Sorting.Core.dll
 C:\Users\Samir\Desktop\Faculdade\Proj & Als\Comparing-Quicksort-Implementations\code\Sorting.Core\obj\Debug\net8.0\Sorting.Core.sourcelink.json
+C:\Users\Rafael\Documents\Comparing-Quicksort-Implementations\code\Sorting.Core\bin\Debug\net8.0\Sorting.Core.deps.json
+C:\Users\Rafael\Documents\Comparing-Quicksort-Implementations\code\Sorting.Core\bin\Debug\net8.0\Sorting.Core.dll
+C:\Users\Rafael\Documents\Comparing-Quicksort-Implementations\code\Sorting.Core\bin\Debug\net8.0\Sorting.Core.pdb
+C:\Users\Rafael\Documents\Comparing-Quicksort-Implementations\code\Sorting.Core\obj\Debug\net8.0\Sorting.Core.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\Rafael\Documents\Comparing-Quicksort-Implementations\code\Sorting.Core\obj\Debug\net8.0\Sorting.Core.AssemblyInfoInputs.cache
+C:\Users\Rafael\Documents\Comparing-Quicksort-Implementations\code\Sorting.Core\obj\Debug\net8.0\Sorting.Core.AssemblyInfo.cs
+C:\Users\Rafael\Documents\Comparing-Quicksort-Implementations\code\Sorting.Core\obj\Debug\net8.0\Sorting.Core.csproj.CoreCompileInputs.cache
+C:\Users\Rafael\Documents\Comparing-Quicksort-Implementations\code\Sorting.Core\obj\Debug\net8.0\Sorting.Core.sourcelink.json
+C:\Users\Rafael\Documents\Comparing-Quicksort-Implementations\code\Sorting.Core\obj\Debug\net8.0\Sorting.Core.dll
+C:\Users\Rafael\Documents\Comparing-Quicksort-Implementations\code\Sorting.Core\obj\Debug\net8.0\refint\Sorting.Core.dll
+C:\Users\Rafael\Documents\Comparing-Quicksort-Implementations\code\Sorting.Core\obj\Debug\net8.0\Sorting.Core.pdb
+C:\Users\Rafael\Documents\Comparing-Quicksort-Implementations\code\Sorting.Core\obj\Debug\net8.0\ref\Sorting.Core.dll

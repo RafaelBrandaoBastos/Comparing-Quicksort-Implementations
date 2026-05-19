@@ -1,8 +1,12 @@
 {
   "version": 2,
-  "dgSpecHash": "GRR3nZr5WxY=",
+  "dgSpecHash": "+JgQTqIbLXM=",
   "success": true,
-  "projectFilePath": "C:\\Users\\Samir\\Desktop\\Faculdade\\Proj & Als\\Comparing-Quicksort-Implementations\\code\\Sorting.Core\\Sorting.Core.csproj",
-  "expectedPackageFiles": [],
+  "projectFilePath": "C:\\Users\\Rafael\\Documents\\Comparing-Quicksort-Implementations\\code\\Sorting.Core\\Sorting.Core.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\Rafael\\.nuget\\packages\\microsoft.netcore.app.ref\\8.0.27\\microsoft.netcore.app.ref.8.0.27.nupkg.sha512",
+    "C:\\Users\\Rafael\\.nuget\\packages\\microsoft.windowsdesktop.app.ref\\8.0.27\\microsoft.windowsdesktop.app.ref.8.0.27.nupkg.sha512",
+    "C:\\Users\\Rafael\\.nuget\\packages\\microsoft.aspnetcore.app.ref\\8.0.27\\microsoft.aspnetcore.app.ref.8.0.27.nupkg.sha512"
+  ],
   "logs": []
 }
