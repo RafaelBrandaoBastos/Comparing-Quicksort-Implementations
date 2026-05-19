@@ -5,7 +5,7 @@ Estudo comparativo empírico de três versões de Quicksort, medindo tempo de ex
 
 ## Pré-requisitos
 
-- Ter o .NET 8 SDK instalado [Download Aqui!](https://dotnet.microsoft.com/pt-br/download/dotnet/thank-you/runtime-desktop-8.0.27-windows-x64-installer?cid=getdotnetcore)
+- Ter o .NET 8 SDK instalado [Download Aqui!](https://dotnet.microsoft.com/pt-br/download/dotnet/thank-you/sdk-8.0.421-windows-x64-installer)
 
 
 ## Como rodar
