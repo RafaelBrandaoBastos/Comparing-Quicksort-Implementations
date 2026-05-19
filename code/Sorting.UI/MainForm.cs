@@ -11,10 +11,10 @@ public partial class MainForm : Form
 {
     private const string ChartAreaName = "MainArea";
     private const string ChartLegendName = "MainLegend";
-    private static readonly Font ChartTitleFont = new("Segoe UI", 11F, FontStyle.Bold);
-    private static readonly Font ChartAxisTitleFont = new("Segoe UI", 10F, FontStyle.Bold);
-    private static readonly Font ChartAxisLabelFont = new("Segoe UI", 10F, FontStyle.Regular);
-    private static readonly Font ChartLegendFont = new("Segoe UI", 10F, FontStyle.Regular);
+    private static readonly Font ChartTitleFont = new("Segoe UI", 12F, FontStyle.Bold);
+    private static readonly Font ChartAxisTitleFont = new("Segoe UI", 11F, FontStyle.Bold);
+    private static readonly Font ChartAxisLabelFont = new("Segoe UI", 11F, FontStyle.Regular);
+    private static readonly Font ChartLegendFont = new("Segoe UI", 11F, FontStyle.Regular);
 
     private int[]? _currentArray;
     private DataPattern _currentPattern;
@@ -147,10 +147,12 @@ public partial class MainForm : Form
         area.AxisY.Title = "Tempo médio (ms)";
         area.AxisX.TitleFont = ChartAxisTitleFont;
         area.AxisY.TitleFont = ChartAxisTitleFont;
+        area.AxisX.IsLabelAutoFit = false;
+        area.AxisY.IsLabelAutoFit = false;
         area.AxisX.LabelStyle.Font = ChartAxisLabelFont;
         area.AxisY.LabelStyle.Font = ChartAxisLabelFont;
         area.AxisX.IsMarginVisible = false;
-        area.AxisX.LabelStyle.Format = "0.####";
+        area.AxisX.LabelStyle.Format = "0";
         area.AxisY.LabelStyle.Format = "0.####";
         area.AxisX.IntervalAutoMode = IntervalAutoMode.VariableCount;
         area.AxisX.MajorGrid.LineColor = Color.Gainsboro;
@@ -161,6 +163,7 @@ public partial class MainForm : Form
         {
             Docking = Docking.Top,
             Alignment = StringAlignment.Near,
+            IsTextAutoFit = false,
             Font = ChartLegendFont
         };
         chart.Legends.Add(legend);
@@ -391,28 +394,7 @@ public partial class MainForm : Form
                 Font = ChartTitleFont
             });
 
-            foreach (var alg in grouped)
-            {
-                var series = new Series(alg.Algorithm)
-                {
-                    ChartType = SeriesChartType.Line,
-                    BorderWidth = 2,
-                    MarkerStyle = MarkerStyle.Circle,
-                    MarkerSize = 6,
-                    IsXValueIndexed = false,
-                    XValueType = ChartValueType.Int32,
-                    YValueType = ChartValueType.Double,
-                    Legend = ChartLegendName,
-                    ChartArea = ChartAreaName
-                };
-
-                foreach (var p in alg.Points)
-                    series.Points.AddXY(p.M, p.AvgTimeMs);
-
-                chart.Series.Add(series);
-            }
-
-            // Recursivo nao usa M; plota como referencia em M=0.
+            // Recursivo nao usa M; plota como referencia em M=0 — adicionado primeiro para aparecer primeiro na legenda.
             var recursiveRows = patternRows
                 .Where(r => string.Equals(r.AlgorithmName, _recursive.Name, StringComparison.OrdinalIgnoreCase))
                 .ToList();
@@ -444,7 +426,29 @@ public partial class MainForm : Form
                 chart.Series.Add(recursiveSeries);
             }
 
-            ApplyAdaptiveChartScale(chart, xValues, yValues);
+            foreach (var alg in grouped)
+            {
+                var series = new Series(alg.Algorithm)
+                {
+                    ChartType = SeriesChartType.Line,
+                    BorderWidth = 2,
+                    MarkerStyle = MarkerStyle.Circle,
+                    MarkerSize = 6,
+                    IsXValueIndexed = false,
+                    XValueType = ChartValueType.Int32,
+                    YValueType = ChartValueType.Double,
+                    Legend = ChartLegendName,
+                    ChartArea = ChartAreaName
+                };
+
+                foreach (var p in alg.Points)
+                    series.Points.AddXY(p.M, p.AvgTimeMs);
+
+                chart.Series.Add(series);
+            }
+
+            string yValueFormat = BuildDynamicNumberFormat(yValues);
+            ApplyAdaptiveChartScale(chart, xValues, yValues, yValueFormat);
 
             bool hasData = chart.Series.Count > 0;
             chart.Legends[ChartLegendName].Enabled = hasData;
@@ -453,9 +457,14 @@ public partial class MainForm : Form
         }
     }
 
-    private static void ApplyAdaptiveChartScale(SafeChart chart, IReadOnlyList<double> xValues, IReadOnlyList<double> yValues)
+    private static void ApplyAdaptiveChartScale(
+        SafeChart chart,
+        IReadOnlyList<double> xValues,
+        IReadOnlyList<double> yValues,
+        string yAxisFormat)
     {
         var area = chart.ChartAreas[ChartAreaName];
+        area.AxisY.LabelStyle.Format = yAxisFormat;
 
         if (xValues.Count == 0 || yValues.Count == 0)
         {
@@ -478,6 +487,45 @@ public partial class MainForm : Form
 
         area.AxisY.Minimum = Math.Max(0, minY - yPadding);
         area.AxisY.Maximum = maxY + yPadding;
+    }
+
+
+
+    private static string BuildDynamicNumberFormat(IReadOnlyList<double> values)
+    {
+        if (values.Count == 0)
+            return "0";
+
+        int maxDecimalsNeeded = 0;
+        foreach (double value in values)
+        {
+            maxDecimalsNeeded = Math.Max(maxDecimalsNeeded, GetDecimalsNeeded(value));
+            if (maxDecimalsNeeded == 4)
+                break;
+        }
+
+        return maxDecimalsNeeded switch
+        {
+            0 => "0",
+            1 => "0.#",
+            2 => "0.##",
+            3 => "0.###",
+            _ => "0.####"
+        };
+    }
+
+    private static int GetDecimalsNeeded(double value)
+    {
+        double rounded = Math.Round(value, 4, MidpointRounding.AwayFromZero);
+
+        for (int decimals = 0; decimals <= 4; decimals++)
+        {
+            double test = Math.Round(rounded, decimals, MidpointRounding.AwayFromZero);
+            if (Math.Abs(rounded - test) < 1e-9)
+                return decimals;
+        }
+
+        return 4;
     }
 
     /// <summary>
